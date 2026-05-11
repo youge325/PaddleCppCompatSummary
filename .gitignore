@@ -1,0 +1,5 @@
+# Claude local settings
+.claude/
+
+# PR metadata cache (fetched from GitHub API)
+.cache/
