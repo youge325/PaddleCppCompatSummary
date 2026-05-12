@@ -29,7 +29,7 @@ paddle/phi/api/include/compat/    ───► <linked-as>libtorch
 | # | 文件 | 主要内容 |
 |---|---|---|
 | 01 | [01-测试用例.md](01-测试用例.md) | 按 ATen / c10 / torch 命名空间分类的 GoogleTest 用例;基础设施 PR |
-| 02 | [02-文档贡献.md](02-文档贡献.md) | tensor_base、TypeMeta、cuda_stream 等文档;按 namespace 的目录组织;5 个 Agent skill |
+| 02 | [02-文档贡献.md](02-文档贡献.md) | tensor_base、TypeMeta、cuda_stream 等文档;按 namespace 的目录组织;4 个 Agent skill |
 | 03 | [03-mismatch复现.md](03-mismatch复现.md) | #58 reproduce some mismatch points;`mismatch_api_record.md` 体系;`unmatch_` 前缀测试 |
 
 ## 3. 22 个 PR 速览
@@ -82,6 +82,6 @@ paddle/phi/api/include/compat/    ───► <linked-as>libtorch
 
 4. **`mismatch_api_record.md` 按 namespace 散布**:在每个 doc 子目录下放一份 `mismatch_api_record.md`,记录该 namespace 下与 PyTorch 不对齐的接口、原因、规避方案。详见 [`03-mismatch复现.md`](03-mismatch复现.md)。
 
-5. **5 个 Agent skill 沉淀工程经验**:`compatibility-testing` / `compat-doc-authoring` / `add-compat-api` / `fix-compat-api` / `cpp-api-compatible` — 每个 skill 是一份 markdown SOP,记录怎么写测试 / 怎么写文档 / 怎么加 API / 怎么修 API / 一图看懂兼容层。后续营员和 LLM 助手按这些 skill 工作即可。
+5. **4 个 Agent skill 沉淀工程经验**:`compatibility-testing` / `compat-doc-authoring` / `add-compat-api` / `fix-compat-api` — 每个 skill 是一份 markdown SOP,记录怎么写测试 / 怎么写文档 / 怎么加 API / 怎么修 API。后续营员和 LLM 助手按这些 skill 工作即可。(测试仓还有一个 `cpp-api-compatible` skill,由同期营员 [@Le-soleile](https://github.com/Le-soleile) 在 PR #57 中创建,不在本总结范围。)
 
 按文档顺序阅读即可。
