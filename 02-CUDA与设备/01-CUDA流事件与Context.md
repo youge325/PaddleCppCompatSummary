@@ -152,50 +152,83 @@ PR 描述里附了 Mermaid 流程图(8192×4375),展示 `getStreamFromPool` 在 
 
 ### 3.4 ★ CUDA Stream ↔ GPUContext 双向同步 — #78652(+37/-46 行,3 个文件)
 
-这个 PR 体量很小但是**架构上最关键的一次修正**,触发它的 issue 是 [FastDeploy#7344](https://github.com/PaddlePaddle/FastDeploy/pull/7344)。
+这个 PR 是 stream 状态同步演变中的**第三步**,触发它的 issue 是 [FastDeploy#7344](https://github.com/PaddlePaddle/FastDeploy/pull/7344)。要理解 #78652,必须先回溯前两步:
 
-#### 问题
+#### 演变第一步:#78143 引入 TLS
 
-之前 compat 层用自己维护的 thread-local storage 记录"当前 CUDA stream":
+#78143 在 `CUDAStream.h` 中实现了 `c10::cuda::CUDAStream` 的完整基础设施,其中 stream 状态管理采用**纯 TLS 方案**:
 
 ```cpp
-// 旧实现(简化)
-namespace c10::cuda {
-thread_local CUDAStream current_stream = default_stream();
+// #78143 实现(在 CUDAStream.h 中 inline)
+struct TLSStreamState {
+  cudaStream_t streams[kMaxDevices]{};
+  bool has_stream[kMaxDevices]{};
+};
 
+inline TLSStreamState& get_tls() {
+  thread_local TLSStreamState s;
+  return s;
+}
+
+inline CUDAStream getCurrentCUDAStream(DeviceIndex device_index) {
+  auto& tls = detail::get_tls();
+  if (tls.has_stream[device_index]) {
+    return make_cuda_stream(tls.streams[device_index], device_index);
+  }
+  // fallback 到 Paddle GPUContext stream
+  auto* phi_stream = paddle::GetCurrentCUDAStream(phi::GPUPlace(device_index));
+  return make_cuda_stream(phi_stream->raw_stream(), device_index);
+}
+
+inline void setCurrentCUDAStream(CUDAStream stream) {
+  auto& tls = detail::get_tls();
+  tls.streams[idx] = stream.stream();
+  tls.has_stream[idx] = true;
+  // 注意:只写 TLS,不回写 GPUContext
+}
+```
+
+**问题暴露**:FastDeploy 用户在 Python 层调用 `paddle.set_cuda_stream(s)`,这只会改 `phi::GPUContext` 的 stream。下游 C++ 库再调 `c10::cuda::getCurrentCUDAStream()` 时,由于 TLS 中 `has_stream[device]` 为 true(曾经通过 compat 设置过),它**优先返回 TLS 中的旧 stream**,完全无视 GPUContext 的变更 — Python/C++ 视角不一致,推理结果错乱。
+
+#### 演变第二步:#78584 弱化 fallback
+
+#78584 把 stream 实现从头文件移到 `CUDAStream.cpp`,顺便把 `getCurrentCUDAStream` 的 fallback 从"读 GPUContext stream"改为"返回 default stream":
+
+```cpp
+// #78584(CUDAStream.cpp)
 CUDAStream getCurrentCUDAStream(DeviceIndex device_index) {
-  return current_stream;
+  cudaStream_t raw = tls_current_streams[device_index];
+  if (raw == nullptr) {
+    return getDefaultCUDAStream(device_index);  // 不再读 GPUContext
+  }
+  return make_cuda_stream(raw, device_index);
+}
+```
+
+这一步缓解了"GPUContext 变更被 TLS 覆盖"的问题,但`setCurrentCUDAStream` 仍然只写 TLS — Python 层改 stream 后,C++ compat 层依然看不到。
+
+#### 演变第三步:#78652 彻底改为 GPUContext 同步
+
+#78652 决定**完全弃用 TLS**,把所有 stream 状态收敛到 Paddle 的 `phi::GPUContext`:
+
+```cpp
+// #78652(CUDAStream.cpp) — 移除 TLS,完全从 GPUContext 读写
+CUDAStream getCurrentCUDAStream(c10::DeviceIndex device_index) {
+  auto raw = getPaddleCurrentStream(device_index);  // 读 GPUContext
+  if (raw == nullptr) {
+    return getDefaultCUDAStream(device_index);
+  }
+  return make_cuda_stream(raw, device_index);
 }
 
 void setCurrentCUDAStream(CUDAStream stream) {
-  current_stream = stream;
-}
-}  // namespace c10::cuda
-```
-
-FastDeploy 在 Python 层调用 `paddle.set_cuda_stream(s)`,后端只会改 `phi::GPUContext` 的 stream,**compat 层的 TLS 一无所知**。下游 C++ 库再调 `c10::cuda::getCurrentCUDAStream()` 拿到的还是默认 stream — Python/C++ 视角不一致,推理结果错乱。
-
-#### 改动
-
-```cpp
-// 新实现:从 GPUContext 读、回写
-CUDAStream getCurrentCUDAStream(DeviceIndex device_index) {
-  // 优先与 Paddle 当前流保持一致
-  cudaStream_t paddle_stream = phi::GetMutableGPUContext()->stream();
-  return CUDAStream::wrap_external(paddle_stream, device_index);
-}
-
-void setCurrentCUDAStream(CUDAStream stream) {
-  // 更新 compat 状态时,同步回 GPUContext
-  cudaStream_t s = stream.stream();
-  
-  // 使用 TLS 持有的 phi::CUDAStream wrapper 回写 GPUContext,
-  // 避免直接篡改外部 stream 对象
-  thread_local std::unique_ptr<phi::CUDAStream> tls_wrapper;
-  tls_wrapper = std::make_unique<phi::CUDAStream>(s);
-  phi::GetMutableGPUContext()->SetStream(tls_wrapper.get());
+  getMutableGPUContext(idx)->SetStream(stream.stream());  // 写 GPUContext
 }
 ```
+
+这真正实现了"双向同步":
+- Python `paddle.set_cuda_stream(s)` → GPUContext 改 → compat `getCurrentCUDAStream()` 立刻返回 `s`
+- C++ `c10::cuda::setCurrentCUDAStream(s)` → GPUContext 改 → Python `paddle.cuda.current_stream()` 立刻返回 `s`
 
 #### 测试
 
@@ -311,30 +344,44 @@ class CUDAGuard {
 
 #### 改动思路
 
-```cpp
-// CUDAStream.cpp(+53/-19)
-namespace c10::cuda {
+#78902 经过多轮迭代,最终方案是**TLS 与 GPUContext 并存、但 `get` 不再读 GPUContext**:
 
-// 重新引入 thread-local current stream
-thread_local std::optional<cudaStream_t> tls_current_stream;
+```cpp
+// #78902 最终版(CUDAStream.cpp)
+// Thread-local vector: device_index -> optional<cudaStream_t>
+static thread_local std::vector<std::optional<cudaStream_t>>
+    g_thread_local_current_streams;
 
 CUDAStream getCurrentCUDAStream(DeviceIndex device_index) {
-  if (tls_current_stream.has_value()) {
-    return CUDAStream::wrap(*tls_current_stream, device_index);
+  // 优先读 TLS:如果本线程显式设置过 current stream,返回它
+  if (device_index < g_thread_local_current_streams.size() &&
+      g_thread_local_current_streams[device_index].has_value()) {
+    return make_cuda_stream(*g_thread_local_current_streams[device_index],
+                            device_index);
   }
-  // fallback to GPUContext stream(保持与 Paddle Python 一致)
-  return CUDAStream::wrap(phi::GetMutableGPUContext()->stream(), device_index);
+  // 没有设置过:返回 default stream,而不是读 GPUContext
+  // 这样新线程不会继承其他线程的 current stream
+  return getDefaultCUDAStream(device_index);
 }
 
 void setCurrentCUDAStream(CUDAStream stream) {
-  tls_current_stream = stream.stream();
-  // 不再 destroy 旧 stream
-  // GPUContext 上不再同步写,避免 destroy 问题
+  // 1. 先写 TLS(PyTorch 语义)
+  g_thread_local_current_streams[idx] = stream.stream();
+
+  // 2. 再回写 GPUContext,但用 SetCUDAStream 而非 SetStream
+  // SetCUDAStream 不会 destroy 旧 stream,避免外部 handle 失效
+  auto* ctx = getMutableGPUContext(idx);
+  ctx->SetCUDAStream(stream.stream());
 }
-}  // namespace c10::cuda
 ```
 
-这样新线程 `tls_current_stream` 为空,fallback 到 `GPUContext` 的 default stream(其语义与 PyTorch 在新线程上读到 default stream 一致)。Paddle Python 层做 `paddle.set_cuda_stream(s)` 改的是 `GPUContext`,新线程依然能看到。同时**`setCurrentCUDAStream` 不再触碰 GPUContext**,杜绝 destroy 问题。
+**三个关键设计决策**:
+
+1. **`getCurrentCUDAStream` 不读 GPUContext**:这是与 #78143 最大的区别。#78143 在 TLS 未命中时 fallback 到 GPUContext stream;#78902 改为 fallback 到 **default stream**。这样新线程启动时永远拿到 default stream,不受其他线程影响。
+
+2. **`setCurrentCUDAStream` 仍写 GPUContext**:为了 backward compatibility — Paddle 内核发射读的是 GPUContext stream,如果 compat 设置 stream 后 GPUContext 不知道,Paddle 内核会跑在错误的流上。
+
+3. **`SetCUDAStream` 替代 `SetStream`**:#78652 用 `SetStream` 回写 GPUContext,后者会 `cudaStreamDestroy` 旧 stream。#78902 改用 `SetCUDAStream`,只更新指针引用不 destroy,彻底杜绝 pool stream 被误销毁的问题。
 
 #### 测试
 
@@ -346,7 +393,7 @@ void setCurrentCUDAStream(CUDAStream stream) {
 
 #### 状态
 
-PR 描述里明确说明了 #78652 引入的两个回归,并阐述这个 PR 的修复方向。截至 2026-05-11 仍在 review,等待导师 [@BingooYang](https://github.com/BingooYang) 确认。
+PR 描述里明确说明了 #78652 引入的两个回归,并阐述这个 PR 的修复方向。截至 2026-05-29 仍在 review,等待导师 [@BingooYang](https://github.com/BingooYang) 确认。
 
 ## 4. 其他 PR 简注
 
