@@ -22,7 +22,7 @@
 |---|---|---|
 | 1 | [00-项目背景与总览.md](00-项目背景与总览.md) | 项目背景、目标、技术架构、时间线 |
 | 2 | [01-基础类型与Tensor/](01-基础类型与Tensor/README.md) | 基础类型(ScalarType / TypeMeta / SymInt / Layout / Storage / DispatchKey / pointer)、Tensor 接口与操作、Sparse |
-| 3 | [02-CUDA与设备/](02-CUDA与设备/README.md) | CUDA 流事件 Context、CUDABlas / Generator / Philox、平台与设备适配(Windows / Mac / DCU / XPU) |
+| 3 | [02-CUDA与设备/](02-CUDA与设备/README.md) | CUDA 流事件 Context、CUDABlas / Generator / Philox、平台与设备适配(Windows / 仅 CPU 编译 / DCU / XPU) |
 | 4 | [03-接口结构与基础设施/](03-接口结构与基础设施/README.md) | libtorch 入口与宏、Linux ABI CI 与编译相关 |
 | 5 | [04-PaddleCppAPITest仓库/](04-PaddleCppAPITest仓库/README.md) | 测试仓贡献(测试用例 / 文档 / mismatch 复现) |
 | 6 | [05-未合并PR分析.md](05-未合并PR分析.md) | OPEN/CLOSED 状态与替代关系 |

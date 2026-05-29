@@ -4,7 +4,7 @@
 
 - **CUDA 流事件与 Context**:`c10::cuda::CUDAStream`、`c10::Event` 与 `at::cuda::CUDAContext{,Light}`、`record_stream`、`getCurrentCUDAStream` ↔ `phi::GPUContext` 双向同步、`thread-local` 语义
 - **CUDA 计算与随机数**:`at::cuda::blas::gemm<T>`、`getCurrentCUDABlasHandle`、`at::Generator` + `at::CUDAGeneratorImpl`、`PhiloxCudaState` + `philox::unpack`
-- **平台与设备适配**:Windows compat 测试、Mac 平台条件编译、DCU(HIP)native API 替换、XPU device 索引解析
+- **平台与设备适配**:Windows compat 测试、仅 CPU 编译路径的条件编译适配、DCU(HIP)native API 替换、XPU device 索引解析
 
 ## 子文档
 
@@ -12,11 +12,11 @@
 |---|---|---|
 | 01 | [01-CUDA流事件与Context.md](01-CUDA流事件与Context.md) | Stream / Event / CUDAContext{,Light} / record_stream / GPUContext 同步 / thread-local stream |
 | 02 | [02-CUDA计算与随机数.md](02-CUDA计算与随机数.md) | CUDABlas / Generator / Philox / DispatchKey for CUDA |
-| 03 | [03-平台与设备适配.md](03-平台与设备适配.md) | Windows / Mac / DCU (HIP) / XPU |
+| 03 | [03-平台与设备适配.md](03-平台与设备适配.md) | Windows / 仅 CPU 编译 / DCU (HIP) / XPU |
 
 ## 涉及 PR
 
-**Paddle 主仓**(15 个):#78060、#78070、#78072、#78143、#78549、#78550、#78551、#78553、#78584、#78595、#78632(closed)、#78647、#78652、#78670、#78808、#78902(open)
+**Paddle 主仓**(15 个):#78060、#78070、#78072、#78143、#78549、#78550、#78551、#78553、#78584、#78595、#78647、#78652、#78670、#78808、#78902(open)
 
 **PaddleCppAPITest**(3 个):#46(CUDABlas)、#47(RecordStream)、#49(Generator)
 

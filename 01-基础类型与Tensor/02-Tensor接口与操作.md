@@ -53,7 +53,7 @@ Paddle 的对应物是 `phi::DenseTensor`(+ 部分 `SelectedRows`、`SparseCooTe
 | [#78554](https://github.com/PaddlePaddle/Paddle/pull/78554) | MERGED | 2026-04-02 | Align resize api |
 | [#78576](https://github.com/PaddlePaddle/Paddle/pull/78576) | MERGED | 2026-04-07 | Add `TORCH_WARN` macro and fix resize_ |
 | [#78609](https://github.com/PaddlePaddle/Paddle/pull/78609) | MERGED | 2026-04-10 | Fix `resize_` with storage alignment |
-| [#78632](https://github.com/PaddlePaddle/Paddle/pull/78632) | CLOSED | — | Skip ATen resize test on Mac(后被 Windows PR 中的条件编译覆盖) |
+| [#78632](https://github.com/PaddlePaddle/Paddle/pull/78632) | CLOSED | — | Skip ATen resize test(后并入 #78670) |
 | [#78633](https://github.com/PaddlePaddle/Paddle/pull/78633) | MERGED | 2026-04-10 | Fix `as_strided` to align `resize_` |
 | [#78552](https://github.com/PaddlePaddle/Paddle/pull/78552) | MERGED | 2026-04-02 | Fix arange default dtype |
 | [#78551](https://github.com/PaddlePaddle/Paddle/pull/78551) | MERGED | 2026-04-02 | Align device related APIs |
@@ -221,7 +221,7 @@ PyTorch 的 `as_strided` 创建对 storage 不同 offset / stride 的 view。当
 
 #### #78632 → 平台问题留尾(CLOSED)
 
-PR 描述只有一句:"Mac 编译器的行为略有不同,先跳过测试,防 pr 阻塞"。后来导师建议合并到 Windows PR 一起处理,该 PR 关闭,Mac 的条件编译合到 #78670。
+PR 描述只有一句:"先跳过测试,防 pr 阻塞"。后来导师建议合并到 Windows PR 一起处理,该 PR 关闭,条件编译合到 #78670。
 
 ### 3.6 `MaybeResetHolder` — 外部 Holder 替换感知 — #78826(+85/-1)
 
