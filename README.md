@@ -1,20 +1,20 @@
 # 护航计划 Paddle C++ API 生态兼容建设 — 工作总结
 
-> 营员:[youge325](https://github.com/youge325) · 项目:第十期飞桨黑客松护航计划集训营(提前批)项目四 · 导师:[@BingooYang](https://github.com/BingooYang) · 集训期:**2026-01-05 ~ 2026-04**(实际工作延续至 2026-05-11)
+> 营员:[youge325](https://github.com/youge325) · 项目:第十期飞桨黑客松护航计划集训营(提前批)项目四 · 导师:[@BingooYang](https://github.com/BingooYang) · 集训期:**2026-01-05 ~ 2026-04**(实际工作延续至 2026-05-29)
 
 ## 项目目标一句话
 
 在 Paddle 仓库的 `paddle/phi/api/include/compat/` 下构建一套 **libtorch C++ API 兼容层**(ATen / c10 / torch 命名空间齐备),使现有基于 PyTorch C++ API 的代码(FastDeploy、DeepEP、DeepGEMM、FlashMLA、hybrid_ep、paddlecodec 等)能在最小改动下编译并链接到 Paddle,同时在配套仓库 [PFCCLab/PaddleCppAPITest](https://github.com/PFCCLab/PaddleCppAPITest) 中以 GoogleTest **逐 API 对齐 PyTorch 行为**、补齐文档、记录 mismatch。
 
-## 成果速览(2026-05-11)
+## 成果速览(2026-05-29)
 
 | 仓库 | 提交 | 合入 | OPEN | CLOSED | 主要贡献 |
 |---|---:|---:|---:|---:|---|
-| [PaddlePaddle/Paddle](https://github.com/PaddlePaddle/Paddle) | 58 | 50 | 3 | 5 | compat 层核心 ATen/c10/torch 接口(新增 89 个文件)、CUDA 流/事件/Context、CUDABlas、Generator/Philox、Sparse、DCU/XPU/Windows 适配、Linux ABI 兼容性 CI |
-| [PFCCLab/PaddleCppAPITest](https://github.com/PFCCLab/PaddleCppAPITest) | 22 | 22 | 0 | 0 | 全套 GoogleTest 单测(覆盖 ATen / c10 / torch 三命名空间)、按 namespace 的 doc 体系、`mismatch_api_record.md` 全套、`add-compat-api`/`fix-compat-api`/`compat-doc-authoring`/`compatibility-testing` 四个 Agent skill |
-| **合计** | **80** | **72** | **3** | **5** | — |
+| [PaddlePaddle/Paddle](https://github.com/PaddlePaddle/Paddle) | 66 | 50 | 9 | 7 | compat 层核心 ATen/c10/torch 接口(新增 89 个文件)、CUDA 流/事件/Context、CUDABlas、Generator/Philox、Sparse、DCU/XPU/Windows 适配、Linux ABI 兼容性 CI |
+| [PFCCLab/PaddleCppAPITest](https://github.com/PFCCLab/PaddleCppAPITest) | 30 | 24 | 6 | 0 | 全套 GoogleTest 单测(覆盖 ATen / c10 / torch 三命名空间)、按 namespace 的 doc 体系、`mismatch_api_record.md` 全套、`add-compat-api`/`fix-compat-api`/`compat-doc-authoring`/`compatibility-testing` 四个 Agent skill |
+| **合计** | **96** | **74** | **15** | **7** | — |
 
-整体合入率:**72/80 = 90.0%**;5 个 CLOSED 全部是被后续 PR 拆解/替代,无功能性丢失(详见 [`05-未合并PR分析.md`](05-未合并PR分析.md))。
+整体合入率:**74/96 = 77.1%**;7 个 CLOSED 全部是被后续 PR 拆解/替代,无功能性丢失(详见 [`05-未合并PR分析.md`](05-未合并PR分析.md))。
 
 ## 阅读路径
 
@@ -26,7 +26,7 @@
 | 4 | [03-接口结构与基础设施/](03-接口结构与基础设施/README.md) | libtorch 入口与宏、Linux ABI CI 与编译相关 |
 | 5 | [04-PaddleCppAPITest仓库/](04-PaddleCppAPITest仓库/README.md) | 测试仓贡献(测试用例 / 文档 / mismatch 复现) |
 | 6 | [05-未合并PR分析.md](05-未合并PR分析.md) | OPEN/CLOSED 状态与替代关系 |
-| 7 | [06-完整PR列表.md](06-完整PR列表.md) | 全部 80 个 PR 的总表与主题串联速查表 |
+| 7 | [06-完整PR列表.md](06-完整PR列表.md) | 全部 96 个 PR 的总表与主题串联速查表 |
 
 ## 关键技术亮点
 

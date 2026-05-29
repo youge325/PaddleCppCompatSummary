@@ -1,6 +1,6 @@
 # 04 · PaddleCppAPITest 仓库
 
-> [PFCCLab/PaddleCppAPITest](https://github.com/PFCCLab/PaddleCppAPITest) — Paddle C++ API 兼容层的**对照测试 / 文档 / mismatch 记录**仓库。22 个 PR,全部 MERGED,作者均为 [@youge325](https://github.com/youge325)。
+> [PFCCLab/PaddleCppAPITest](https://github.com/PFCCLab/PaddleCppAPITest) — Paddle C++ API 兼容层的**对照测试 / 文档 / mismatch 记录**仓库。30 个 PR,24 个 MERGED,6 个 OPEN,作者均为 [@youge325](https://github.com/youge325)。
 
 ## 1. 仓库定位
 
@@ -32,7 +32,7 @@ paddle/phi/api/include/compat/    ───► <linked-as>libtorch
 | 02 | [02-文档贡献.md](02-文档贡献.md) | tensor_base、TypeMeta、cuda_stream 等文档;按 namespace 的目录组织;4 个 Agent skill |
 | 03 | [03-mismatch复现.md](03-mismatch复现.md) | #58 reproduce some mismatch points;`mismatch_api_record.md` 体系;`unmatch_` 前缀测试 |
 
-## 3. 22 个 PR 速览
+## 3. 30 个 PR 速览
 
 按时间顺序:
 
@@ -52,7 +52,7 @@ paddle/phi/api/include/compat/    ───► <linked-as>libtorch
 | 12 | [#25](https://github.com/PFCCLab/PaddleCppAPITest/pull/25) | 2026-01-25 | 测试用例 | TensorAccessor 测试 |
 | 13 | [#26](https://github.com/PFCCLab/PaddleCppAPITest/pull/26) | 2026-01-27 | 测试用例 | flatten/narrow 测试 |
 | 14 | [#34](https://github.com/PFCCLab/PaddleCppAPITest/pull/34) | 2026-02-06 | 文档 | 更新 tensor_base 文档 |
-| 15 | [#40](https://github.com/PFCCLab/PaddleCppAPITest/pull/40) | 2026-02-27 | 测试 + skill | sum/t/transpose_/view_as/coalesce/item 测试 + `compatibility-testing` skill |
+| 15 | [#40](https://github.com/PFCCLab/PaddleCppAPITest/pull/40) | 2026-02-27 | 测试 + skill | sum/t/transpose_/view_as/coalesce/item 测试 + 迭代 `compatibility-testing` skill(由 @Le-soleile #38 创建) |
 | 16 | [#46](https://github.com/PFCCLab/PaddleCppAPITest/pull/46) | 2026-03-05 | 测试 + 文档 | CUDABlas/CUDAContext 大综合 PR(+4111/-655,97 文件) + `compat-doc-authoring` skill |
 | 17 | [#47](https://github.com/PFCCLab/PaddleCppAPITest/pull/47) | 2026-03-05 | 测试 + 文档 | RecordStream 测试 + stream 三篇文档 |
 | 18 | [#49](https://github.com/PFCCLab/PaddleCppAPITest/pull/49) | 2026-03-07 | 测试 + 文档 | Generator 测试 + 3 篇文档 |
@@ -60,6 +60,14 @@ paddle/phi/api/include/compat/    ───► <linked-as>libtorch
 | 20 | [#58](https://github.com/PFCCLab/PaddleCppAPITest/pull/58) | 2026-03-27 | 重组 + mismatch | reproduce some mismatch points + 目录重组到 ATen/ c10/ torch/ |
 | 21 | [#59](https://github.com/PFCCLab/PaddleCppAPITest/pull/59) | 2026-04-04 | 文档 + CI | cuda_stream 等文档大更新 + 3 个 add/fix/compat skill + GitHub Actions |
 | 22 | [#60](https://github.com/PFCCLab/PaddleCppAPITest/pull/60) | 2026-04-29 | 测试 + CI | `PADDLE_WITH_CUSTOM_KERNEL` 宏接入 + 复现 MaybeResetHolder + CUDAStreamDeadlockAlignmentTest |
+| 23 | [#61](https://github.com/PFCCLab/PaddleCppAPITest/pull/61) | 2026-05-18 | 文档 | 综合 C++ API mapping docs、alias mapping、skill refinements |
+| 24 | [#62](https://github.com/PFCCLab/PaddleCppAPITest/pull/62) | 2026-05-19 | 文档 | skill 文档补充 Step 0 环境搭建和 Step 7 PR workflow(OPEN) |
+| 25 | [#63](https://github.com/PFCCLab/PaddleCppAPITest/pull/63) | 2026-05-25 | 文档 | GPUContext 架构图 + API mapping table 更新 |
+| 26 | [#64](https://github.com/PFCCLab/PaddleCppAPITest/pull/64) | 2026-05-28 | 测试 + 文档 | broadcast_to 跨框架测试 + mapping doc 更新(OPEN) |
+| 27 | [#65](https://github.com/PFCCLab/PaddleCppAPITest/pull/65) | 2026-05-28 | 测试用例 | vstack 行为对齐测试(OPEN) |
+| 28 | [#66](https://github.com/PFCCLab/PaddleCppAPITest/pull/66) | 2026-05-28 | 测试用例 | take 行为对齐测试(OPEN) |
+| 29 | [#67](https://github.com/PFCCLab/PaddleCppAPITest/pull/67) | 2026-05-29 | 测试用例 | svd 行为对齐测试(OPEN) |
+| 30 | [#68](https://github.com/PFCCLab/PaddleCppAPITest/pull/68) | 2026-05-29 | 测试用例 | repeat_interleave 行为对齐测试(OPEN) |
 
 ## 4. 工作量与覆盖率
 

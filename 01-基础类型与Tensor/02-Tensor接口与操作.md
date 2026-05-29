@@ -304,7 +304,7 @@ mykernel<<<...>>>(t.packed_accessor32<float, 2>());
 | [#78555](https://github.com/PaddlePaddle/Paddle/pull/78555) | Align misc apis | 13 个文件 +421/-115:`c10::Allocator` 加 `CaptureId_t`/`MempoolId_t`/`MempoolIdHash`、`DataPtr::mutable_get()`、`SetAllocator`/`GetAllocator`、`InefficientStdFunctionContext`;`CUDAGuard` 补 `original_device()`;`CUDAStream` 补 `priority_range`/`pack3`/`unpack3`/`getStreamFromExternal`/`query`/`synchronize`/`hash`;新增 `torch/version.h`。 |
 | [#78580](https://github.com/PaddlePaddle/Paddle/pull/78580) | Delete useless code and rename test files | 37 个文件 +294/-288:统一测试文件命名为 `ATen_*` / `c10_*`,清理预处理无用代码,抑制未使用变量警告。 |
 | [#78837](https://github.com/PaddlePaddle/Paddle/pull/78837) | Align some other APIs | 拆自 #78707:对齐 `chunk`(+33/-23,新增分块边界检查)、`expand`(+29/-75,修复 -1 维度推断)、`index`、`_values`、`sparse_coo_tensor`/`sparse_csr_tensor`;`c10_layout_test.cc` +32 行 SparseCooTensorInferSize 案例。 |
-| [PFCCLab#9](https://github.com/PFCCLab/PaddleCppAPITest/pull/9) | Add test for defined and reset and Complement tests | +2775/-569 行 17 文件:补 `reset`/`defined` 测试,改写 AbsTest/ArangeTest 等 8 个 op 测试,引入 `compatibility-testing` skill;PR 描述提了"SymInt 是否要对齐"的开放问题(后由 #78807 回答)。 |
+| [PFCCLab#9](https://github.com/PFCCLab/PaddleCppAPITest/pull/9) | Add test for defined and reset and Complement tests | +2775/-569 行 17 文件:补 `reset`/`defined` 测试,改写 AbsTest/ArangeTest 等 8 个 op 测试,迭代修补 `compatibility-testing` skill(该 skill 由 @Le-soleile #38 创建);PR 描述提了"SymInt 是否要对齐"的开放问题(后由 #78807 回答)。 |
 | [PFCCLab#24](https://github.com/PFCCLab/PaddleCppAPITest/pull/24) | Rewrite test files | +281/-167 行,重写 4 个测试文件(TensorTest / FromBlobTest / ReshapeTest / SumTest),把零散的 `EXPECT_*` 整理为结构化测试组。 |
 
 ## 5. 与 PaddleCppAPITest 的对应关系
