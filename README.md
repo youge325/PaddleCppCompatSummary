@@ -4,7 +4,7 @@
 
 ## 项目目标一句话
 
-在 Paddle 仓库的 `paddle/phi/api/include/compat/` 下构建一套 **libtorch C++ API 兼容层**(ATen / c10 / torch 命名空间齐备),使现有基于 PyTorch C++ API 的代码(FastDeploy、DeepEP、DeepGEMM、FlashMLA、hybrid_ep、paddlecodec 等)能在最小改动下编译并链接到 Paddle,同时在配套仓库 [PFCCLab/PaddleCppAPITest](https://github.com/PFCCLab/PaddleCppAPITest) 中以 GoogleTest **逐 API 对齐 PyTorch 行为**、补齐文档、记录 mismatch。
+在 Paddle 仓库的 `paddle/phi/api/include/compat/` 下构建一套 **libtorch C++ API 兼容层**(ATen / c10 / torch 命名空间齐备),使现有基于 PyTorch C++ API 的代码(FastDeploy、DeepEP(含 hybrid-ep 分支)、DeepGEMM、FlashMLA、paddlecodec 等第三方库)能在最小改动下编译并链接到 Paddle,同时在配套仓库 [PFCCLab/PaddleCppAPITest](https://github.com/PFCCLab/PaddleCppAPITest) 中以 GoogleTest **逐 API 对齐 PyTorch 行为**、补齐文档、记录 mismatch。
 
 ## 成果速览(2026-05-29)
 

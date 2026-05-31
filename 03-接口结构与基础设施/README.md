@@ -22,7 +22,7 @@
 
 1. **ABI 检查作为最后一道防线**(#78831):compat 层向外承诺 `c10::`/`at::`/`torch::`/`caffe2::` 命名空间下的符号稳定。Static Check 直接接 `readelf --dyn-syms` 比对 base wheel 与 PR wheel,protected 符号被删就直接 fail 并要求导师手动 approve。这是项目能持续生长而不破坏下游的核心保障。
 
-2. **下游编译触发的 hotfix 优先**:`flashmla`(#78550)、`paddlecodec`(#78641)、`hybrid_ep`(#77854)、`DeepEP`(#78576/#78584/#78549)等每次下游报编译错,都会迅速产出一个 PR 修复 — compat 层的功能不是"猜测出来",而是"被下游编译需求倒逼出来"。
+2. **下游编译触发的 hotfix 优先**:`flashmla`(#78550)、`paddlecodec`(#78641)、`DeepEP`(含 hybrid-ep 分支,#77854/#78576/#78584/#78549)等每次下游报编译错,都会迅速产出一个 PR 修复 — compat 层的功能不是"猜测出来",而是"被下游编译需求倒逼出来"。
 
 3. **宏命名严格对齐**:`TORCH_WARN` / `STD_CHECK` / `STD_TORCH_CHECK` / `TORCH_CHECK_EQ/NE/LT/LE/GT/GE` 全部沿用 PyTorch 上游命名,保证下游代码无需改宏即可编译。
 

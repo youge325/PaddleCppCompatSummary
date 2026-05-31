@@ -36,9 +36,9 @@ PyTorch C++ API 的入口约定:
 
 #### 背景
 
-hybrid_ep(多模态算子库)的编译只 `#include <torch/torch.h>`,然后用 `at::Tensor` / `c10::ScalarType` 等接口。它不在乎实现细节,只要这一个顶级入口能解析所有引用。
+DeepEP 的 hybrid-ep 分支编译只 `#include <torch/torch.h>`,然后用 `at::Tensor` / `c10::ScalarType` 等接口。它不在乎实现细节,只要这一个顶级入口能解析所有引用。
 
-之前 compat 层没有 `torch/torch.h`,hybrid_ep 编译直接报"找不到该头文件"。
+之前 compat 层没有 `torch/torch.h`,hybrid-ep 分支编译直接报"找不到该头文件"。
 
 #### 改动
 
@@ -60,7 +60,7 @@ hybrid_ep(多模态算子库)的编译只 `#include <torch/torch.h>`,然后用 `
 
 #### 效果
 
-hybrid_ep 编译过。**这个 PR 是项目早期的标志性里程碑** — 第一次"下游库无改动直接编译过"的实例。
+hybrid-ep 分支编译过。**这个 PR 是项目早期的标志性里程碑** — 第一次"下游库无改动直接编译过"的实例。
 
 ### 3.2 `TORCH_WARN` — #78576(+86/-4 行,2 个文件)
 
